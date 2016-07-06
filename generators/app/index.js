@@ -1,36 +1,265 @@
 'use strict';
-var yeoman = require('yeoman-generator');
+
+var _ = require('underscore.string');
+var generators = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
 
-module.exports = yeoman.Base.extend({
-  prompting: function () {
-    // Have Yeoman greet the user.
-    this.log(yosay(
-      'Welcome to the scrumtrulescent ' + chalk.red('generator-hardcopy-html') + ' generator!'
-    ));
+module.exports = generators.Base.extend({
 
-    var prompts = [{
-      type: 'confirm',
-      name: 'someAnswer',
-      message: 'Would you like to enable this option?',
-      default: true
-    }];
+    prompting: function () {
+        var done = this.async();
+        // Have Yeoman greet the user.
+        this.log(yosay(
+            'Welcome to the ' + chalk.red('\nHardcopy HTML') + '\n generator!'
+        ));
+        this.log(chalk.green(
+            'You\'ll also have the option to use Normalise-css and Modernizr.js \n'
+        ));
 
-    return this.prompt(prompts).then(function (props) {
-      // To access props later use this.props.someAnswer;
-      this.props = props;
-    }.bind(this));
-  },
+        this.prompt([{
+            type: 'input',
+            name: 'appName',
+            message: 'Your project name',
+            default: 'html-project',
+            store: true
+        }, {
+            type: 'input',
+            name: 'appDescription',
+            message: 'Short description of the project...',
+            default: 'A new HTML project',
+            store: true
+        }, {
+            type: 'input',
+            name: 'gitUsername',
+            message: 'What\'s your Github username?',
+            store: true
+        }, {
+            type: 'input',
+            name: 'authorName',
+            message: 'What\'s your name (the author)?',
+            default: '',
+            store: true
+        }, {
+            type: 'confirm',
+            name: 'includeNormalize',
+            message: 'Would you like to include Normalize.css?',
+            default: true
+        }]).then(function(answers) {
+            this.props = answers;
+            this.log('app name', answers.appName);
+            done();
+        }.bind(this));
 
-  writing: function () {
-    this.fs.copy(
-      this.templatePath('dummyfile.txt'),
-      this.destinationPath('dummyfile.txt')
-    );
-  },
+    },
 
-  install: function () {
-    this.installDependencies();
-  }
+    writing: {
+        // Copy the configuration files
+        config: function() {
+            this.fs.copyTpl(
+                this.templatePath('_package.json'),
+                this.destinationPath('package.json'),
+                {
+                    appName: _.slugify(this.props.appName),
+                    appDescription : this.props.appDescription,
+                    authorName : this.props.authorName
+                }
+            );
+            this.fs.copyTpl(
+                this.templatePath('_bower.json'),
+                this.destinationPath('bower.json'),
+                {
+                    appName: _.slugify(this.props.appName),
+                    appDescription : this.props.appDescription,
+                    authorName : this.props.authorName,
+                    includeNormalize : this.props.includeNormalize
+                }
+            );
+            this.fs.copy(
+                this.templatePath('bowerrc'),
+                this.destinationPath('.bowerrc')
+            );
+            this.fs.copy(
+                this.templatePath('gitignore'),
+                this.destinationPath('.gitignore')
+            );
+            this.fs.copy(
+                this.templatePath('gitattributes'),
+                this.destinationPath('.gitattributes')
+            );
+            this.fs.copy(
+                this.templatePath('editorconfig'),
+                this.destinationPath('.editorconfig')
+            );
+            this.fs.copy(
+                this.templatePath('_Gruntfile.js'),
+                this.destinationPath('Gruntfile.js')
+            );
+        },
+        // Copy Application Files
+        app: function() {
+            this.fs.copy(
+                this.templatePath('scss/_style.scss'),
+                this.destinationPath('scss/style.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/_hc-mixins.scss'),
+                this.destinationPath('scss/mixins/_hc-mixins.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/layout/global.scss'),
+                this.destinationPath('scss/layout/global.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/layout/default-wordpress.scss'),
+                this.destinationPath('scss/layout/default-wordpress.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/overrides/_hc-bundle-overrides.scss'),
+                this.destinationPath('scss/overrides/_hc-bundle-overrides.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/overrides/_hc-scaffolding.scss'),
+                this.destinationPath('scss/overrides/_hc-scaffolding.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/overrides/_hc-typography.scss'),
+                this.destinationPath('scss/overrides/_hc-typography.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/overrides/_hc-variables.scss'),
+                this.destinationPath('scss/overrides/_hc-variables.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/partials/_breadcrumbs.scss'),
+                this.destinationPath('scss/partials/_breadcrumbs.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/partials/_footer.scss'),
+                this.destinationPath('scss/partials/_footer.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/partials/_header.scss'),
+                this.destinationPath('scss/partials/_header.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/partials/_navigation.scss'),
+                this.destinationPath('scss/partials/_navigation.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/partials/_pagination.scss'),
+                this.destinationPath('scss/partials/_pagination.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/partials/_sidebar.scss'),
+                this.destinationPath('scss/partials/_sidebar.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/templates/404.scss'),
+                this.destinationPath('scss/templates/404.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/templates/contact.scss'),
+                this.destinationPath('scss/templates/contact.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/templates/generic-content.scss'),
+                this.destinationPath('scss/templates/generic-content.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/templates/homepage.scss'),
+                this.destinationPath('scss/templates/homepage.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/templates/index.scss'),
+                this.destinationPath('scss/templates/index.scss')
+            );
+            this.fs.copy(
+                this.templatePath('scss/templates/single.scss'),
+                this.destinationPath('scss/templates/single.scss')
+            );
+            this.fs.copy(
+                this.templatePath('css/_style.css'),
+                this.destinationPath('public/css/style.css')
+            );
+            this.fs.copy(
+                this.templatePath('js/_script.js'),
+                this.destinationPath('js/script.js')
+            );
+            this.fs.copyTpl(
+                this.templatePath('index.html'),
+                this.destinationPath('public/index.html'),
+                {
+                    appName: this.props.appName,
+                    appDescription : this.props.appDescription,
+                    authorName : this.props.authorName
+                }
+            );
+            // PHP files/templates
+            this.fs.copyTpl(
+                this.templatePath('php/index.php'),
+                this.destinationPath('php/index.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/404.php'),
+                this.destinationPath('php/404.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/page-contact.php'),
+                this.destinationPath('php/page-contact.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/page-home.php'),
+                this.destinationPath('php/page-home.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/single.php'),
+                this.destinationPath('php/single.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/template-generic-content.php'),
+                this.destinationPath('php/template-generic-content.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/inc/config.php'),
+                this.destinationPath('php/inc/config.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/inc/header.php'),
+                this.destinationPath('php/inc/header.php'),
+                {
+                    appName: this.props.appName,
+                    appDescription : this.props.appDescription,
+                    authorName : this.props.authorName
+                }
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/inc/footer.php'),
+                this.destinationPath('php/inc/footer.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/inc/breadcrumbs.php'),
+                this.destinationPath('php/inc/breadcrumbs.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/inc/form-contact.php'),
+                this.destinationPath('php/inc/form-contact.php')
+            );
+            this.fs.copyTpl(
+                this.templatePath('php/inc/social-media.php'),
+                this.destinationPath('php/inc/social-media.php')
+            );
+        },
+    },
+
+    //Install Dependencies
+    install: function() {
+        this.installDependencies({
+            bower: true,
+            npm: true,
+            callback: function() {
+                this.spawnCommand('grunt', ['bowerBuild']);
+            }.bind(this)
+        });
+    },
 });
