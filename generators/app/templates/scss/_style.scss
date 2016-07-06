@@ -1,19 +1,19 @@
 //@import "partials/meta";
-@import "overrides/sms-bundle-overrides";
+@import "overrides/hc-bundle-overrides";
 @import "bourbon";
-@import "overrides/sms-scaffolding";
+@import "overrides/hc-scaffolding";
 @import "neat";
 @import "bitters/base";
 
 //-------------- SMS Mixins -------------------------------//
-@import "mixins/sms-mixins.scss";
+@import "mixins/hc-mixins.scss";
 
 //-------------- Stylesheets for JS plugins ---------------//
 
 //-------------- Default File Overrides -------------------//
 
-@import "overrides/sms-typography";
-@import "overrides/sms-variables";
+@import "overrides/hc-typography";
+@import "overrides/hc-variables";
 
 //-------------- Layout -----------------------------------//
 @import "layout/global";
